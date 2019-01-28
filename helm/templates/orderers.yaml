@@ -60,6 +60,9 @@ spec:
          - mountPath: /var/hyperledger/orderer/orderer.genesis.block
            name: orderer
            subPath: channel-artifacts/genesis.block
+         - mountPath: /var/hyperledger/production/orderer
+           name: orderer
+           subPath: data/orderer{{ $ordererId }}-{{ $.Values.ordererNamespace }}
       volumes:
         - name: orderer
           persistentVolumeClaim:

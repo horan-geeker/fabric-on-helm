@@ -34,8 +34,13 @@ spec:
               value: "3"
             - name: KAFKA_ZOOKEEPER_CONNECT
               value: {{ $.Values.kafkaZkConnect|quote }}
+            # KAFKA_ADVERTISED_HOST_NAME must be set,it can make orderer connect kafka
             - name: KAFKA_ADVERTISED_HOST_NAME
-              value: "kafka0.{{ $.Values.zkKafkaNamespace }}"
+              value: "{{ $.Values.kafkaName }}{{ $kafkaId }}.{{ $.Values.zkKafkaNamespace }}"
+            - name: KAFKA_LOG_DIRS
+              value: "/tmp/kafka-logs/data"
+            - name: KAFKA_LOG_DIR
+              value: "/tmp/kafka-logs/data"
           volumeMounts:
             - mountPath: /tmp/kafka-logs
               name: zk-kafka

@@ -15,7 +15,7 @@ spec:
     storage: 20Gi
   accessModes:
     - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
+  persistentVolumeReclaimPolicy: Delete
   storageClassName: hostpath
   hostPath:
     path: {{ .Values.currentDirPath }}

@@ -40,7 +40,7 @@ spec:
       volumes:
         - name: peer-orgs
           persistentVolumeClaim:
-            claimName: peer-orgs-pvc
+            claimName: peer-{{ $org.domain }}-pvc
 --- 
 apiVersion: v1
 kind: Service
@@ -119,18 +119,21 @@ spec:
         command: ["peer"]
         args: ["node","start"]
         volumeMounts:
-         - mountPath: /etc/hyperledger/fabric/msp
-           name: peer-orgs
-           subPath: crypto-config/peerOrganizations/{{ $org.domain }}/peers/peer0.{{ $org.domain }}/msp
-         - mountPath: /etc/hyperledger/fabric/tls
-           name: peer-orgs
-           subPath: crypto-config/peerOrganizations/{{ $org.domain }}/peers/peer0.{{ $org.domain }}/tls
-         - mountPath: /host/var/run/
-           name: run
+          - mountPath: /etc/hyperledger/fabric/msp
+            name: peer-orgs
+            subPath: crypto-config/peerOrganizations/{{ $org.domain }}/peers/peer0.{{ $org.domain }}/msp
+          - mountPath: /etc/hyperledger/fabric/tls
+            name: peer-orgs
+            subPath: crypto-config/peerOrganizations/{{ $org.domain }}/peers/peer0.{{ $org.domain }}/tls
+          - mountPath: /var/hyperledger/production
+            name: peer-orgs
+            subPath: data/peer0-{{ $org.domain }}
+          - mountPath: /host/var/run/
+            name: run
       volumes:
         - name: peer-orgs
           persistentVolumeClaim:
-            claimName: peer-orgs-pvc
+            claimName: peer-{{ $org.domain }}-pvc
         - name: run
           hostPath:
             path: /var/run
@@ -220,18 +223,21 @@ spec:
         command: ["peer"]
         args: ["node","start"]
         volumeMounts:
-         - mountPath: /etc/hyperledger/fabric/msp
-           name: peer-orgs
-           subPath: crypto-config/peerOrganizations/{{ $org.domain }}/peers/peer1.{{ $org.domain }}/msp
-         - mountPath: /etc/hyperledger/fabric/tls
-           name: peer-orgs
-           subPath: crypto-config/peerOrganizations/{{ $org.domain }}/peers/peer1.{{ $org.domain }}/tls
-         - mountPath: /host/var/run/
-           name: run
+          - mountPath: /etc/hyperledger/fabric/msp
+            name: peer-orgs
+            subPath: crypto-config/peerOrganizations/{{ $org.domain }}/peers/peer1.{{ $org.domain }}/msp
+          - mountPath: /etc/hyperledger/fabric/tls
+            name: peer-orgs
+            subPath: crypto-config/peerOrganizations/{{ $org.domain }}/peers/peer1.{{ $org.domain }}/tls
+          - mountPath: /host/var/run/
+            name: run
+          - mountPath: /var/hyperledger/production
+            name: peer-orgs
+            subPath: data/peer1-{{ $org.domain }}
       volumes:
         - name: peer-orgs
           persistentVolumeClaim:
-            claimName: peer-orgs-pvc
+            claimName: peer-{{ $org.domain }}-pvc
         - name: run
           hostPath:
             path: /var/run
@@ -281,7 +287,7 @@ spec:
             value: "unix:///host/var/run/docker.sock"
           - name: GOPATH
             value: "/opt/gopath"
-          - name: CORE_LOGGING_LEVEL
+          - name: FABRIC_LOGGING_SPEC
             value: "DEBUG"
           - name: CORE_PEER_ID
             value: "cli"
@@ -306,21 +312,21 @@ spec:
            - mountPath: /host/var/run/
              name: run
            - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go/
-             name: current-dir
+             name: peer-orgs
              subPath: chaincode/go/
            - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
-             name: current-dir
+             name: peer-orgs
              subPath: crypto-config
            - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/
-             name: current-dir
+             name: peer-orgs
              subPath: channel-artifacts
            - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/scripts
-             name: current-dir
+             name: peer-orgs
              subPath: scripts
       volumes:
         - name: peer-orgs
           persistentVolumeClaim:
-            claimName: peer-orgs-pvc
+            claimName: peer-{{ $org.domain }}-pvc
         - name: run
           hostPath:
             path: /var/run

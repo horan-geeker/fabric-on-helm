@@ -8,7 +8,7 @@ metadata:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: peer-orgs-pv
+  name: peer-{{ $org.domain }}-pv
   labels:
     app: storage
 spec:
@@ -19,12 +19,12 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: hostpath
   hostPath:
-    path: {{ .Values.currentDirPath }}
+    path: {{ $.Values.currentDirPath }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: peer-orgs-pvc
+  name: peer-{{ $org.domain }}-pvc
   namespace: {{ $org.domain }}
 spec:
   accessModes:
