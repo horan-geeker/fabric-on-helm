@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: {{ .Values.zkKafkaNamespace }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zk-kafka-pv
+  labels: 
+    app: storage
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hostpath
+  hostPath:
+    path: {{ .Values.currentDirPath }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zk-kafka-pvc
+  namespace: {{ .Values.zkKafkaNamespace }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+     requests:
+       storage: 20Gi
+  selector: 
+    matchLabels:
+      app: storage
+---

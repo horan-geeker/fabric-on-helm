@@ -1,0 +1,32 @@
+# Default values for fabric-on-helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+zkKafkaNamespace: fabric-zk-kafka
+
+zkName: zookeeper
+zkGroup:
+  - id: 1
+    servers: server.1=0.0.0.0:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888
+  - id: 2
+    servers: server.1=zookeeper1:2888:3888 server.2=0.0.0.0:2888:3888 server.3=zookeeper3:2888:3888
+  - id: 3
+    servers: server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=0.0.0.0:2888:3888
+
+kafkaName: kafka
+kafkaReplica: 4
+kafkaZkConnect: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
+
+ordererNamespace: example-com
+ordererName: orderer
+ordererReplica: 1
+
+currentDirPath: /Users/hejunwei/k8s/fabric-on-helm/
+
+peerOrgs:
+  - domain: org1-example-com
+    caFileName: a5b709c8d0afb478cc7cd889ac508a012707f216e6434ba20412dcae9d86cde0_sk
+    MSPId: Org1MSP
+  - domain: org2-example-com
+    caFileName: 700327fd07ab11be664219e0f8ac851044f59c95598f7a38d83fcd0e049c5a41_sk
+    MSPId: Org2MSP

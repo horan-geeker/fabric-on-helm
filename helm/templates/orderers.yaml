@@ -1,0 +1,85 @@
+---
+{{- range $ordererId := until (.Values.ordererReplica|int)}}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: {{ $.Values.ordererNamespace }}
+  name: {{ $.Values.ordererName }}{{ $ordererId }}
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: hyperledger
+        role: orderer
+        org: {{ $.Values.ordererNamespace }}
+        orderer-id: {{ $.Values.ordererName }}{{ $ordererId }}
+    spec:
+      containers:
+      - name: {{ $.Values.ordererName }}{{ $ordererId }}
+        image: hyperledger/fabric-orderer:latest
+        env:
+        - name: ORDERER_GENERAL_LOGLEVEL
+          value: debug
+        - name: ORDERER_GENERAL_LISTENADDRESS
+          value: 0.0.0.0
+        - name: ORDERER_GENERAL_GENESISMETHOD
+          value: file
+        - name: ORDERER_GENERAL_GENESISFILE
+          value: /var/hyperledger/orderer/orderer.genesis.block
+        - name: ORDERER_GENERAL_LOCALMSPID
+          value: OrdererMSP
+        - name: ORDERER_GENERAL_LOCALMSPDIR
+          value: /var/hyperledger/orderer/msp
+        - name: ORDERER_GENERAL_TLS_ENABLED
+          value: "true"
+        - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+          value: /var/hyperledger/orderer/tls/server.key
+        - name: ORDERER_GENERAL_TLS_CERTIFICATE
+          value: /var/hyperledger/orderer/tls/server.crt
+        - name: ORDERER_GENERAL_TLS_ROOTCAS
+          value: '[/var/hyperledger/orderer/tls/ca.crt]'
+        - name: ORDERER_KAFKA_RETRY_SHORTINTERVAL
+          value: "1s"
+        - name: ORDERER_KAFKA_RETRY_SHORTTOTAL
+          value: "30s"
+        - name: ORDERER_KAFKA_VERBOSE
+          value: "true"
+        workingDir: /opt/gopath/src/github.com/hyperledger/fabric
+        ports:
+         - containerPort: 7050
+        command: ["orderer"]
+        volumeMounts:
+         - mountPath: /var/hyperledger/orderer/msp
+           name: orderer
+           subPath: crypto-config/ordererOrganizations/example-com/orderers/orderer0.example-com/msp
+         - mountPath: /var/hyperledger/orderer/tls
+           name: orderer
+           subPath: crypto-config/ordererOrganizations/example-com/orderers/orderer0.example-com/tls
+         - mountPath: /var/hyperledger/orderer/orderer.genesis.block
+           name: orderer
+           subPath: channel-artifacts/genesis.block
+      volumes:
+        - name: orderer
+          persistentVolumeClaim:
+            claimName: orderer-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: {{ $.Values.ordererNamespace }}
+  name: {{ $.Values.ordererName }}{{ $ordererId }}
+spec:
+ selector:
+   app: hyperledger
+   role: orderer
+   org: {{ $.Values.ordererNamespace }}
+   orderer-id: {{ $.Values.ordererName }}{{ $ordererId }}
+ clusterIP: None
+ ports:
+   - name: listen-endpoint
+     protocol: TCP
+     port: 7050
+---
+{{- end }}

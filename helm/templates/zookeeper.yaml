@@ -1,0 +1,62 @@
+{{- range $zk := .Values.zkGroup }}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: {{ $.Values.zkKafkaNamespace }}
+  name: {{ $.Values.zkName }}{{ $zk.id }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+       app: hyperledger
+       role: zookeeper
+       zookeeper-id: {{ $.Values.zkName }}{{ $zk.id }}
+    spec:
+      containers:
+        - name: {{ $.Values.zkName }}{{ $zk.id }}
+          image: hyperledger/fabric-zookeeper:latest
+          env:
+            - name: ZOO_MY_ID
+              value: {{ $zk.id|quote }}
+            - name: ZOO_SERVERS
+              value: {{ $zk.servers|quote }}
+          volumeMounts:
+            - mountPath: /datalog
+              name: zk-kafka
+              subPath: data/zk{{ $zk.id }}log
+            - mountPath: /data
+              name: zk-kafka
+              subPath: data/zk{{ $zk.id }}data
+      volumes:
+        - name: zk-kafka
+          persistentVolumeClaim:
+            claimName: zk-kafka-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+   namespace: {{ $.Values.zkKafkaNamespace }}
+   name: {{ $.Values.zkName }}{{ $zk.id }}
+spec:
+ selector:
+   app: hyperledger
+   role: zookeeper
+   zookeeper-id: {{ $.Values.zkName }}{{ $zk.id }}
+ clusterIP: None
+
+ ports:
+   - name: zookeeper-port1
+     protocol: TCP
+     port: 2888
+
+   - name: zookeeper-port2
+     protocol: TCP
+     port: 3888
+
+   - name: zookeeper-port3
+     protocol: TCP
+     port: 2181
+---
+{{- end }}

@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: {{ .Values.ordererNamespace }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: orderer-pv
+  labels: 
+    app: storage
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hostpath
+  hostPath:
+    path: {{ .Values.currentDirPath }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer-pvc
+  namespace: {{ .Values.ordererNamespace }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+     requests:
+       storage: 20Gi
+  selector: 
+    matchLabels:
+      app: storage
+---

@@ -1,0 +1,39 @@
+{{- range $org := .Values.peerOrgs }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: {{ $org.domain }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: peer-orgs-pv
+  labels:
+    app: storage
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hostpath
+  hostPath:
+    path: {{ .Values.currentDirPath }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer-orgs-pvc
+  namespace: {{ $org.domain }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+     requests:
+       storage: 20Gi
+  selector: 
+    matchLabels:
+      app: storage
+---
+{{- end }}
