@@ -100,14 +100,12 @@ spec:
           value: "peer0.{{ $org.domain }}"
         - name: CORE_PEER_ADDRESS
           value: "peer0.{{ $org.domain }}:7051"
-        - name: CORE_PEER_CHAINCODEADDRESS
-          value: "peer0.{{ $org.domain }}:7052"
-        - name: CORE_PEER_CHAINCODELISTENADDRESS
-          value: "0.0.0.0:7052"
         - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
           value: "peer0.{{ $org.domain }}:7051"
         - name: CORE_PEER_LOCALMSPID
           value: {{ $org.MSPId }}
+        - name: CORE_PEER_ADDRESSAUTODETECT
+          value: "true"
 
         workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
         
@@ -204,14 +202,12 @@ spec:
           value: "peer1.{{ $org.domain }}"
         - name: CORE_PEER_ADDRESS
           value: "peer1.{{ $org.domain }}:7051"
-        - name: CORE_PEER_CHAINCODEADDRESS
-          value: "peer1.{{ $org.domain }}:7052"
-        - name: CORE_PEER_CHAINCODELISTENADDRESS
-          value: "0.0.0.0:7052"
         - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
           value: "peer1.{{ $org.domain }}:7051"
         - name: CORE_PEER_LOCALMSPID
           value: {{ $org.MSPId }}
+        - name: CORE_PEER_ADDRESSAUTODETECT
+          value: "true"
 
         workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
         
